@@ -9,9 +9,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from MyProgram.templates_list import templates_list as TEMPLATES_LIST
-import types
-
+from net_builder.MyProgram.templates_list import templates_list as TEMPLATES_LIST
+from net_builder.MyProgram.builder_urls import builder_urls as BUILDER_URLS
+import types,os,sys
 
 ################################################################################
 # function : show_config_templates_list                                        #
@@ -58,7 +58,7 @@ def get_matched_templates_by_template_id(template_id):
  else:
   raise Http404
 
-def dictionary_key_is_matched_check(template_id,input_datas_list):
+def dictionary_key_is_fully_occupied(template_id,input_datas_list):
  compare_key_name_list = []
  try:
   for dictionary_item in TEMPLATES_LIST:
@@ -78,6 +78,19 @@ def dictionary_key_is_matched_check(template_id,input_datas_list):
      not_perfect_component.append(input_data_dict)
      break
   return not_perfect_component
+ else:
+  raise Http404
+
+def get_builder_class_by_template_id(template_id):
+ try:
+  for dictionary_item in TEMPLATES_LIST:
+   if dictionary_item['id'] == int(template_id):
+    builder_class_name = dictionary_item['builder']
+    builder_class = BUILDER_URLS[builder_class_name]
+    return builder_class_name, builder_class
+    break
+ except:
+  raise Http404
  else:
   raise Http404
 
@@ -110,13 +123,16 @@ def show_config_templates_details(request, template_id):
     return Response([{"running_status":"error","error_details":"POST inputs should be list format"}])
    
    ## error input parameters
-   not_perfect_component = dictionary_key_is_matched_check(template_id,input_datas_list)
+   not_perfect_component = dictionary_key_is_fully_occupied(template_id,input_datas_list)
    if not_perfect_component:
     return Response(not_perfect_component)
 
    ##########################################################################
    # from now, run linux shell script                                       #
    ##########################################################################
+   builder_class_name, builder_class = get_builder_class_by_template_id(template_id)
+   builder_class(builder_class_name,input_datas_list)
+
    
    return Response(["hoho"])
   else:
