@@ -28,17 +28,42 @@ class KR1B_CS_T2_7050S_NEX(COMMONS_UTILS):
  def run(self):
   for input_data_dict in self.input_datas_list:
    requested_network = input_data_dict['mgmt_network']
+   #################################################
+   # get the ip address pool from network          #
+   #################################################
    ip_address_pool = self.get_ipaddress_list_from_network(requested_network)
    if not ip_address_pool:
     input_data_dict['running_status']=u'error'
     input_data_dict['error_details']=u'%s network has error' % (requested_network)
     continue
+   #################################################
+   # ip usage confirmation                         #
+   #################################################
+   if not self.ip_address_usage_confirm_from_database('ip_manager',
+                                                      'mgmt_network_ip_pools_for_cstack',
+                                                      ip_address_pool):
+    input_data_dict['running_status']=u'error'
+    input_data_dict['error_details']=u'%s network has been already used' % (requested_network)
+    continue
+   #################################################
+   # get the extra ip address to builder up        #
+   #################################################
+   extra_args={}
+   extra_args['gateway_vip'] = ip_address_pool[-2]
+   extra_args['gateway_r1'] = ip_address_pool[-3]
+   extra_args['gateway_r2'] = ip_address_pool[-4]
+   extra_args['mgmtsw_mip'] = ip_address_pool[-5]
+   extra_args['upsrvsw_mip'] = ip_address_pool[-6]
+   extra_args['dnsrvsw_mip'] = ip_address_pool[-7]
+   #################################################
+   # shell commander                               #
+   #################################################
+   shell_arguments = self.linux_args % input_data_dict +" "+ self.extra_linux_args % extra_args 
+   shell_command = "%s %s" % (self.builder_class_name,shell_arguments)
+   print shell_command
    
-   self.ip_address_usage_confirm_from_database('ip_manager',
-                                               'mgmt_network_ip_pools_for_cstack',
-                                               ip_address_pool)
-
-
+   input_data_dict['running_status']=u'success'
+   input_data_dict['success_details']=u'completed'
   return self.input_datas_list
    
 

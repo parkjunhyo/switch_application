@@ -1,12 +1,13 @@
 #! /bin/env python
 
-import os,re,copy
+import os,re,copy,MySQLdb
 from netaddr import *
 from switch_application.settings import DATABASES as DB_CONNECT_INFO
 
 django_database_name = DB_CONNECT_INFO['default']['NAME']
 django_database_user = DB_CONNECT_INFO['default']['USER']
 django_database_pass = DB_CONNECT_INFO['default']['PASSWORD']
+django_database_host = DB_CONNECT_INFO['default']['HOST']
 
 class commons_utils:
 
@@ -25,9 +26,57 @@ class commons_utils:
   #######################################
   for IPaddress in list(IP_network):
    if str(IPaddress) not in IP_address_pool:
-    IP_address_pool.append(str(IPaddress).strip())
+    re_IPaddress = "%s/%s" % (str(IPaddress).strip(),IP_subnet)
+    IP_address_pool.append(re_IPaddress)
   return IP_address_pool
+
+ def database_connect(self):
+  try:
+   open_db = MySQLdb.connect(django_database_host,django_database_user,django_database_pass)
+   try:
+    open_cursor = open_db.cursor()
+   except:
+    open_db.close()
+    return False, False
+  except:
+   return False, False
+  return open_db,open_cursor
+
+ def database_disconnect(self, open_db, open_cursor):
+  open_cursor.close()
+  open_db.close()
+
 
  def ip_address_usage_confirm_from_database(self,application_name,database_model_name,ip_address_pool):
   database_name_to_access = "%s.%s_%s" % (django_database_name,application_name,database_model_name)
-  print database_name_to_access
+  query_msg = "select allocated_ip_address from %s" % (database_name_to_access)
+  open_db, open_cursor = self.database_connect()
+  ######################################
+  # if database connection fail        #
+  ######################################
+  if not open_cursor:
+   return False
+  ######################################
+  # send the query message to database #
+  ######################################
+  open_cursor.execute(query_msg)
+  result_from_database = open_cursor.fetchall()
+  self.database_disconnect(open_db, open_cursor)
+
+  re_arrange_result_from_database = []
+  for result_tupletype in result_from_database:
+   re_arrange_result_from_database.append(result_tupletype[0].strip())
+  
+  ######################################
+  # ip usage confirm                   #
+  ###################################### 
+  for ip_addr_element in ip_address_pool:
+   if ip_addr_element in re_arrange_result_from_database:
+    return False
+  ######################################
+  # return                             #
+  ######################################
+  return True
+
+
+
