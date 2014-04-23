@@ -21,12 +21,13 @@ mgmt_swname=$1
 mgmt_desc_uptor=$2
 mgmt_desc_downtor=$3
 mgmt_network=$4
-gateway_vip=$5
-gateway_r1=$6
-gateway_r2=$7
-mgmtsw_mip=$8
-upsrvsw_mip=$9
-dnsrvsw_mip=${10}
+##### from here, only ip is necessary (without subnet size)
+gateway_vip=`echo $5 | awk -F'[/]' 'END{print $1}'`
+gateway_r1=`echo $6 | awk -F'[/]' 'END{print $1}'`
+gateway_r2=`echo $7 | awk -F'[/]' 'END{print $1}'`
+mgmtsw_mip=`echo $8 | awk -F'[/]' 'END{print $1}'`
+upsrvsw_mip=`echo $9 | awk -F'[/]' 'END{print $1}'`
+dnsrvsw_mip=`echo ${10} | awk -F'[/]' 'END{print $1}'`
 
 ##### necessary extra information gethering
 mgmt_subnet_prefixlen=`echo $mgmt_network | awk -F'[/]' 'END{print $NF}'`
