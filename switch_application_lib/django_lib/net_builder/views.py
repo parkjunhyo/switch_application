@@ -131,10 +131,9 @@ def show_config_templates_details(request, template_id):
    # from now, run linux shell script                                       #
    ##########################################################################
    builder_class_name, builder_class = get_builder_class_by_template_id(template_id)
-   builder_class(builder_class_name,input_datas_list)
-
-   
-   return Response(["hoho"])
+   builder_instance = builder_class(builder_class_name,input_datas_list)
+   builder_instance.run()
+   return Response(input_datas_list)
   else:
    return Response(status=status.HTTP_400_BAD_REQUEST)
 
