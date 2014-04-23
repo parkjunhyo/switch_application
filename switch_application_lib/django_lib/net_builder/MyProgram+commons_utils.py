@@ -78,5 +78,12 @@ class commons_utils:
   ######################################
   return True
 
-
+ def shell_command_exec(self, shell_command):
+  run_result = os.popen(shell_command)
+  complete_status = ''
+  result_msg = run_result.readline()
+  while result_msg:
+   complete_status = result_msg.strip()
+   result_msg = run_result.readline()
+  return complete_status
 

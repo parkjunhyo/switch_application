@@ -56,11 +56,19 @@ class KR1B_CS_T2_7050S_NEX(COMMONS_UTILS):
    extra_args['upsrvsw_mip'] = ip_address_pool[-6]
    extra_args['dnsrvsw_mip'] = ip_address_pool[-7]
    #################################################
-   # shell commander                               #
+   # shell commander and run the shell             #
    #################################################
    shell_arguments = self.linux_args % input_data_dict +" "+ self.extra_linux_args % extra_args 
    shell_command = "%s %s" % (self.builder_class_name,shell_arguments)
-   print shell_command
+   result_after_shell_execute = self.shell_command_exec(shell_command)
+   if not self.success_pattern.search(result_after_shell_execute):   
+    input_data_dict['running_status']=u'error'
+    input_data_dict['error_details']=result_after_shell_execute
+    continue
+   #################################################
+   # shell commander and run the shell             #
+   #################################################
+
    
    input_data_dict['running_status']=u'success'
    input_data_dict['success_details']=u'completed'
