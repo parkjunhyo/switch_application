@@ -2,7 +2,7 @@
 
 import os,re,copy
 from net_builder.MyProgram.commons_utils import commons_utils as COMMONS_UTILS
-from ip_manager.models import switch_configuration_urls,switch_network_usages,mgmt_network_ip_pools_for_cstack,mgmt_network_ip_pools_for_ostack,class srv_network_ip_pools_for_cstack,srv_network_ip_pools_for_ostack
+from ip_manager.models import switch_configuration_urls, switch_network_usages, mgmt_network_ip_pools_for_cstack, mgmt_network_ip_pools_for_ostack, srv_network_ip_pools_for_cstack, srv_network_ip_pools_for_ostack
 
 
 class KR1B_CS_T2_7050S_NEX(COMMONS_UTILS):
@@ -92,9 +92,9 @@ class KR1B_CS_T2_7050S_NEX(COMMONS_UTILS):
      useby_value='broadcast'
     else:
      useby_value=''
-    mgmt_network_ip_pools_for_cstack(allocated_ip_address=ipaddr_item,
+    mgmt_network_ip_pools_for_cstack(allocated_ip_address=ip_address_pool[index],
                                      mgmt_swname=input_data_dict['mgmt_swname'],
-                                     usedby=useby_value)
+                                     usedby=useby_value).save()
 
    input_data_dict['running_status']=u'success'
    input_data_dict['success_details']=u'completed'
