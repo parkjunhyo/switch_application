@@ -63,7 +63,10 @@ class KR1B_CS_T2_7050S_NEX(COMMONS_UTILS):
    result_after_shell_execute = self.shell_command_exec(shell_command)
    if not self.success_pattern.search(result_after_shell_execute):   
     input_data_dict['running_status']=u'error'
-    input_data_dict['error_details']=result_after_shell_execute
+    if result_after_shell_execute:
+     input_data_dict['error_details']=result_after_shell_execute
+    else:
+     input_data_dict['error_details']=u'%s command is failed' % (self.builder_class_name)
     continue
    #################################################
    # shell commander and run the shell             #

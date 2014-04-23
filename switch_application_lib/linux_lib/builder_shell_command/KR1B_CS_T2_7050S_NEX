@@ -1,0 +1,91 @@
+#! /bin/env bash
+
+#####################################################################################################################################
+### File : MyDjango_switch_computer/django_switch_net_boot/MyProgram+Builder_configuration.py                                       #
+### Class : KR1B_CS_T2_7050S_NEX                                                                                                    #
+### Parameter for input :                                                                                                           #
+###   self.builder_arguments = "%(mgmt_swname)s %(mgmt_desc_uptor)s %(mgmt_desc_downtor)s %(mgmt_network)s"                         #
+###   self.builder_extra_arguments = "%(gateway_vip)s %(gateway_r1)s %(gateway_r2)s %(mgmtsw_mip)s %(upsrvsw_mip)s %(dnsrvsw_mip)s" #
+#####################################################################################################################################
+
+##### input parameter confirmation
+file_name=$0
+if [[ $# != 10 ]]
+then
+ echo "the input parameters are not enough"
+ exit
+fi
+
+##### input paramter re-arrange to build the configuration
+mgmt_swname=$1
+mgmt_desc_uptor=$2
+mgmt_desc_downtor=$3
+mgmt_network=$4
+gateway_vip=$5
+gateway_r1=$6
+gateway_r2=$7
+mgmtsw_mip=$8
+upsrvsw_mip=$9
+dnsrvsw_mip=${10}
+
+##### necessary extra information gethering
+mgmt_subnet_prefixlen=`echo $mgmt_network | awk -F'[/]' 'END{print $NF}'`
+
+##### get the tempates file 
+form_file="/home/switch_application/switch_application/configuration_templates/KR1B_CS_T2_7050S_NEX"
+
+##### create the directory to store generated configuration
+mgmt_config_dir="/var/www/html/config/$mgmt_swname"
+if [[ ! -d $mgmt_config_dir ]]
+then
+ mkdir -p $mgmt_config_dir
+ chmod 777 $mgmt_config_dir
+else
+ echo "mgmt_swname error : $mgmt_config_dir has been already existed"
+ exit
+fi
+
+##### copy the configuration file from template
+uptor_config_file=$mgmt_config_dir/$mgmt_desc_uptor
+if [[ ! -f $uptor_config_file ]]
+then
+ cp $form_file $uptor_config_file
+ chmod 777 $uptor_config_file
+else
+ echo "mgmt_desc_uptor error : $mgmt_desc_uptor has been already existed"
+ exit
+fi
+
+downtor_config_file=$mgmt_config_dir/$mgmt_desc_downtor
+if [[ ! -f $downtor_config_file ]]
+then
+ cp $form_file $downtor_config_file
+ chmod 777 $downtor_config_file
+else
+ echo "mgmt_desc_downtor error : $mgmt_desc_downtor has been already existed"
+ exit
+fi
+
+
+#######################################################################################
+##################### start the change parameter with input variables #################
+#######################################################################################
+declare -a tors_array=($uptor_config_file $downtor_config_file)
+
+## common part, replace the variables
+for tor_item in ${tors_array[*]}
+do
+ sed -i 's/CHANGE_NTP_1/'$gateway_r1'/' $tor_item
+ sed -i 's/CHANGE_NTP_2/'$gateway_r2'/' $tor_item
+ sed -i 's/CHANGE_MGMT_GW_VIP/'$gateway_vip'/' $tor_item
+done
+
+## unique part, replace the variables
+sed -i 's/CHANGE_MGMT_IPADDRNET/'$upsrvsw_mip'\/'$mgmt_subnet_prefixlen'/' $uptor_config_file
+sed -i 's/CHANGE_MGMT_IPADDRNET/'$dnsrvsw_mip'\/'$mgmt_subnet_prefixlen'/' $downtor_config_file
+
+## return 
+outer_address=`route | grep -i 'default' | awk '{print $8}' | xargs ifconfig | grep -i 'inet addr' | awk -F'[ :]' '{print $13}'`
+outer_url="http://$outer_address/config/$mgmt_swname"
+echo "success : $outer_url"
+exit
