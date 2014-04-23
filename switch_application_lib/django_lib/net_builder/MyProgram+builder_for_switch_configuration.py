@@ -98,6 +98,6 @@ class KR1B_CS_T2_7050S_NEX(COMMONS_UTILS):
 
    input_data_dict['running_status']=u'success'
    input_data_dict['success_details']=u'completed'
-  return self.input_datas_list
+  return self.select_viewer_items(self.input_datas_list,self.selective_viewer)
    
 

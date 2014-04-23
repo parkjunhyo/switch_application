@@ -87,3 +87,10 @@ class commons_utils:
    result_msg = run_result.readline()
   return complete_status
 
+ def select_viewer_items(self,input_datas_list,selective_viewer):
+  local_values = copy.copy(input_datas_list)
+  for local_value in local_values:
+   for key_name in local_value.keys():
+    if key_name not in selective_viewer:
+     del local_value[key_name]
+  return local_values
