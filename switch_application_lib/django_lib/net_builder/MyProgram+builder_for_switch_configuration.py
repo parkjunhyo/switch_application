@@ -29,7 +29,17 @@ class KR1B_CS_T2_7050S_NEX(COMMONS_UTILS):
 
  def run(self):
   for input_data_dict in self.input_datas_list:
+   requested_swname = input_data_dict['mgmt_swname']
    requested_network = input_data_dict['mgmt_network']
+   #################################################
+   # confirmation of mgmt swname is                #
+   #################################################
+   if not self.mgmt_swname_usage_confirm_from_database('ip_manager',
+                                                       'switch_configuration_urls',
+                                                       requested_swname):
+    input_data_dict['running_status']=u'error'
+    input_data_dict['error_details']=u'%s network has been already used' % (requested_swname)
+    continue
    #################################################
    # get the ip address pool from network          #
    #################################################

@@ -65,7 +65,9 @@ class commons_utils:
 
   re_arrange_result_from_database = []
   for result_tupletype in result_from_database:
-   re_arrange_result_from_database.append(result_tupletype[0].strip())
+   item_value = result_tupletype[0].strip()
+   if item_value not in re_arrange_result_from_database: 
+    re_arrange_result_from_database.append(item_value)
   
   ######################################
   # ip usage confirm                   #
@@ -78,6 +80,29 @@ class commons_utils:
   ######################################
   return True
 
+ def mgmt_swname_usage_confirm_from_database(self,application_name,database_model_name,requested_swname):
+  database_name_to_access = "%s.%s_%s" % (django_database_name,application_name,database_model_name)
+  query_msg = "select mgmt_swname from %s" % (database_name_to_access)
+  open_db, open_cursor = self.database_connect()
+  if not open_cursor:
+   return False
+  open_cursor.execute(query_msg)
+  result_from_database = open_cursor.fetchall()
+  self.database_disconnect(open_db, open_cursor)
+
+  re_arrange_result_from_database = []
+  for result_tupletype in result_from_database:
+   item_value = result_tupletype[0].strip() 
+   if item_value not in re_arrange_result_from_database:
+    re_arrange_result_from_database.append(item_value)
+  ######################################
+  # mgmt_name usage confirm            #
+  ######################################
+  if requested_swname in re_arrange_result_from_database:
+   return False
+  return True
+
+
  def shell_command_exec(self, shell_command):
   run_result = os.popen(shell_command)
   complete_status = ''
@@ -86,6 +111,7 @@ class commons_utils:
    complete_status = result_msg.strip()
    result_msg = run_result.readline()
   return complete_status
+
 
  def select_viewer_items(self,input_datas_list,selective_viewer):
   local_values = copy.copy(input_datas_list)

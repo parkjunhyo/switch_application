@@ -12,6 +12,9 @@ from rest_framework.response import Response
 from net_builder.MyProgram.templates_list import templates_list as TEMPLATES_LIST
 from net_builder.MyProgram.builder_urls import builder_urls as BUILDER_URLS
 import types,os,sys
+from rest_framework.compat import BytesIO
+from switch_application.settings import DATABASES as DB_CONNECT_INFO
+import MySQLdb
 
 ################################################################################
 # function : show_config_templates_list                                        #
@@ -31,8 +34,10 @@ def show_config_templates_list(request):
     # data : {"name": "junhyo"}                                                 #
     # data(type) : <type 'str'>                                                 # 
     # return Response(data)                                                     #
-    # data = [{"name": "junhyo"}]  : [{"name": "junhyo"}], curl, web is OK      #
-    # data = {"name": "junhyo"}    : {"name": "junhyo"},   curl, web is OK      #
+    #############################################################################
+    # content = JSONRenderer().render(request.QUERY_PARAMS)                     #
+    # stream = BytesIO(content)                                                 #
+    # data = JSONParser().parse(stream)                                         #
     #############################################################################
     return Response(status=status.HTTP_400_BAD_REQUEST)
    # return 
@@ -138,3 +143,157 @@ def show_config_templates_details(request, template_id):
    return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+################################################################################
+# function : show_mgmtsw_list                                                  #
+################################################################################
+def database_connect():
+ ##### Access information to Database
+ django_database_user = DB_CONNECT_INFO['default']['USER']
+ django_database_pass = DB_CONNECT_INFO['default']['PASSWORD']
+ django_database_host = DB_CONNECT_INFO['default']['HOST']
+
+ try:
+  open_db = MySQLdb.connect(django_database_host,django_database_user,django_database_pass)
+  try:
+   open_cursor = open_db.cursor()
+  except:
+   open_db.close()
+   return False, False
+ except:
+  return False, False
+ return open_db,open_cursor
+
+def database_disconnect(open_db,open_cursor):
+ open_cursor.close()
+ open_db.close()
+
+@csrf_exempt
+@api_view(['GET'])
+def show_mgmtsw_list(request):
+
+ if request.method == 'GET':
+  if request.content_type == 'text/plain':
+   if request.QUERY_PARAMS:
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+   #############################################
+   # database model information                #
+   # switch_configuration_urls                 #
+   # switch_network_usages                     #
+   # mgmt_network_ip_pools_for_cstack          #
+   # mgmt_network_ip_pools_for_ostack          #
+   # srv_network_ip_pools_for_cstack           #
+   # srv_network_ip_pools_for_ostack           #
+   #############################################
+   django_database_host = DB_CONNECT_INFO['default']['NAME']
+   query_msg = "select mgmt_swname,builder_name,url from %s.%s_%s;" % (django_database_host,'ip_manager','switch_configuration_urls')
+   open_db,open_cursor = database_connect()
+   if not open_cursor:
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+   open_cursor.execute(query_msg)
+   query_results = open_cursor.fetchall()
+   database_disconnect(open_db,open_cursor)
+   #############################################
+   # re arrange to display                     #
+   #############################################
+   mgmtsw_list = []
+   for result_tuple in query_results:
+    mgmtsw_list.append({'mgmt_swname':result_tuple[0],'builder_name':result_tuple[1],'url':result_tuple[2]})
+   return Response(mgmtsw_list)
+
+  else: ## end of if request.content_type == 'text/plain':
+   return Response(status=status.HTTP_400_BAD_REQUEST)
+ else: ## end of if request.method == 'GET':
+  return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+################################################################################
+# function : show_mgmtsw_list                                                  #
+################################################################################
+def listing_from_database_result_tuple(index, query_results):
+ return_list = []
+ for result_tuple in query_results:
+  if result_tuple[int(index)] not in return_list:
+   return_list.append(result_tuple[int(index)].strip())
+ return return_list
+
+@csrf_exempt
+@api_view(['GET','DELETE'])
+def show_mgmtsw_details(request,mgmtsw_name):
+ if request.method == 'GET':
+  if request.content_type == 'text/plain':
+   if request.QUERY_PARAMS:
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+   django_database_host = DB_CONNECT_INFO['default']['NAME']
+   return_result_dict={}
+   ##############################################
+   # find the name matched mgmtsw_name          #
+   ##############################################
+   query_msg = "select builder_name, url from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','switch_configuration_urls',mgmtsw_name)
+   open_db,open_cursor = database_connect()
+   open_cursor.execute(query_msg)
+   query_results = open_cursor.fetchall() 
+   database_disconnect(open_db,open_cursor)
+   if not query_results:
+    return Response(["check the mgmt_swname"],status=status.HTTP_400_BAD_REQUEST)
+   return_result_dict['builder_name'] = listing_from_database_result_tuple(0, query_results)
+   return_result_dict['url'] = listing_from_database_result_tuple(1, query_results)
+   ##############################################
+   # find the mgmt network matched mgmtsw_name  #
+   ##############################################
+   query_msg = "select mgmt_network from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','switch_network_usages',mgmtsw_name)
+   open_db,open_cursor = database_connect()
+   open_cursor.execute(query_msg)
+   query_results = open_cursor.fetchall() 
+   database_disconnect(open_db,open_cursor)
+   if not query_results:
+    return Response(["check the mgmt_swname"],status=status.HTTP_400_BAD_REQUEST)
+   return_result_dict['mgmt_network'] = listing_from_database_result_tuple(0, query_results)
+   ##############################################
+   # find the srv network matched mgmtsw_name   #
+   ##############################################
+   query_msg = "select srv_network from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','switch_network_usages',mgmtsw_name)
+   open_db,open_cursor = database_connect()
+   open_cursor.execute(query_msg)
+   query_results = open_cursor.fetchall()
+   database_disconnect(open_db,open_cursor)
+   if not query_results:
+    return Response(["check the mgmt_swname"],status=status.HTTP_400_BAD_REQUEST)
+   return_result_dict['srv_network'] = listing_from_database_result_tuple(0, query_results)
+
+   return Response(return_result_dict) 
+
+  else:
+   return Response(status=status.HTTP_400_BAD_REQUEST)
+
+ elif request.method == 'DELETE':
+  #############################################
+  # database information remove               #
+  # switch_configuration_urls                 #
+  # switch_network_usages                     #
+  # mgmt_network_ip_pools_for_cstack          #
+  # mgmt_network_ip_pools_for_ostack          #
+  # srv_network_ip_pools_for_cstack           #
+  # srv_network_ip_pools_for_ostack           #
+  #############################################
+  django_database_host = DB_CONNECT_INFO['default']['NAME']
+  query_msgs = [ 
+       "delete from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','switch_configuration_urls',mgmtsw_name),
+       "delete from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','switch_network_usages',mgmtsw_name),
+       "delete from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','mgmt_network_ip_pools_for_cstack',mgmtsw_name),
+       "delete from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','mgmt_network_ip_pools_for_ostack',mgmtsw_name),
+       "delete from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','srv_network_ip_pools_for_cstack',mgmtsw_name),
+       "delete from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','srv_network_ip_pools_for_ostack',mgmtsw_name)
+  ]
+  open_db,open_cursor = database_connect()
+  for query_msg in query_msgs:
+   open_cursor.execute(query_msg)
+  database_disconnect(open_db,open_cursor)
+  #############################################
+  # shell file remove                         #
+  #############################################
+  exec_command = "rm -rf /var/www/html/config/%s" % (mgmtsw_name)
+  os.system(exec_command)
+  return Response([{'running_status':'deleted'}])
+ else:
+  return Response(status=status.HTTP_400_BAD_REQUEST)
