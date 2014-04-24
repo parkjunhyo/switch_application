@@ -11,7 +11,8 @@ if [[ ! -d '/tftp_home' ]]
 then
  mkdir /tftp_home
  chmod 777 /tftp_home
- cp ./bootscript.py /tftp_home/bootscript.py
+ # cp ./bootscript.py /tftp_home/bootscript.py
+ ln ./bootscript.py /tftp_home/bootscript.py
  chmod 777 /tftp_home/bootscript.py
 fi
 
