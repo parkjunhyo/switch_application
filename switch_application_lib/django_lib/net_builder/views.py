@@ -224,13 +224,6 @@ def get_builder_class_by_mgmt_swname(mgmt_swname):
   return builder_class_name, builder_class
   break
 
-def listing_from_database_result_tuple(index, query_results):
- return_list = []
- for result_tuple in query_results:
-  if result_tuple[int(index)] not in return_list:
-   return_list.append(result_tuple[int(index)].strip())
- return return_list
-
 @csrf_exempt
 @api_view(['GET','DELETE'])
 def show_mgmtsw_details(request,mgmtsw_name):
