@@ -111,41 +111,11 @@ class KR1B_CS_T2_7050S_NEX(COMMONS_UTILS):
   return self.select_viewer_items(self.input_datas_list,self.selective_viewer)
    
  def detail_view(self,mgmtsw_name):
- 
   return_result_dict = {} 
-
-  get_value = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_configuration_urls','builder_name',mgmtsw_name)
-  if not get_value:
-   return_result_dict = {}
-   return_result_dict['running_status']=u'error'
-   return_result_dict['running_status']=u'check the mgmt_swname'
-   return return_result_dict
-  return_result_dict['builder_name'] = get_value
-
-  get_value = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_configuration_urls','url',mgmtsw_name)
-  if not get_value:
-   return_result_dict = {}
-   return_result_dict['running_status']=u'error'
-   return_result_dict['running_status']=u'check the mgmt_swname'
-   return return_result_dict
-  return_result_dict['url'] = get_value
-
-  get_value = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_network_usages','mgmt_network',mgmtsw_name)
-  if not get_value:
-   return_result_dict = {}
-   return_result_dict['running_status']=u'error'
-   return_result_dict['running_status']=u'check the mgmt_swname'
-   return return_result_dict
-  return_result_dict['mgmt_network'] = get_value
-
-  get_value = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_network_usages','srv_network',mgmtsw_name)
-  if not get_value:
-   return_result_dict = {}
-   return_result_dict['running_status']=u'error'
-   return_result_dict['running_status']=u'check the mgmt_swname'
-   return return_result_dict
-  return_result_dict['srv_network'] = get_value
-
+  return_result_dict['builder_name'] = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_configuration_urls','builder_name',mgmtsw_name)
+  return_result_dict['url'] = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_configuration_urls','url',mgmtsw_name)
+  return_result_dict['mgmt_network'] = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_network_usages','mgmt_network',mgmtsw_name)
+  return_result_dict['srv_network'] = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_network_usages','srv_network',mgmtsw_name)
   return return_result_dict
   
 

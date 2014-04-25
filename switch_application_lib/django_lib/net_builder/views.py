@@ -239,7 +239,7 @@ def show_mgmtsw_details(request,mgmtsw_name):
     builder_class_name, builder_class = get_builder_class_by_mgmt_swname(mgmtsw_name)
     builder_instance = builder_class(builder_class_name,None)
    except:
-    return Response(status=status.HTTP_400_BAD_REQUEST)
+    return Response([{"running_status":"error","error_details":"check the mgmt_swname"}],status=status.HTTP_400_BAD_REQUEST)
    run_result = builder_instance.detail_view(mgmtsw_name)
    return Response(run_result) 
 
