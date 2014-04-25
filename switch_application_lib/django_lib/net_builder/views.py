@@ -11,6 +11,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.http import Http404
 
+from rest_framework.views import APIView
+from django.contrib.auth.models import User
+from rest_framework import permissions
+
 from net_builder.MyProgram.templates_list import templates_list as TEMPLATES_LIST
 from net_builder.MyProgram.builder_urls import builder_urls as BUILDER_URLS
 import types,os,sys
@@ -101,11 +105,57 @@ def get_builder_class_by_template_id(template_id):
  else:
   raise Http404
 
-@csrf_exempt
-@api_view(['GET','POST'])
-def show_config_templates_details(request, template_id):
+#@csrf_exempt
+#@api_view(['GET','POST'])
+#def show_config_templates_details(request, template_id):
+#
+# if request.method == 'GET':
+#  if request.content_type == 'text/plain':
+#   if request.QUERY_PARAMS:
+#    return Response(status=status.HTTP_400_BAD_REQUEST)
+#   ########################################################################
+#   # matched_templates_details : type 'list', elements are dictionary     #
+#   ########################################################################
+#   matched_by_template_id_templates_details = get_matched_templates_by_template_id(template_id)
+#   return Response(matched_by_template_id_templates_details)
+#  else:
+#   return Response(status=status.HTTP_400_BAD_REQUEST)
+#
+# elif request.method == 'POST':
+#  
+#  if request.content_type == 'application/json':
+#   #########################################################################################################################################
+#   # curl -X POST http://192.168.42.135:8080/net_builder/config_templates/1/ -d '[{"name":"junhyo"}]' -H "Content-Type: application/json"  #
+#   # print request.POST : only form-data 
+#   # print request.DATA
+#   ##############################################################################################################
+#   input_datas_list = request.DATA
+#   if type(input_datas_list) != types.ListType:
+#    return Response([{"running_status":"error","error_details":"POST inputs should be list format"}])
+#   
+#   ## error input parameters
+#   not_perfect_component = dictionary_key_is_fully_occupied(template_id,input_datas_list)
+#   if not_perfect_component:
+#    return Response(not_perfect_component)
+#
+#   ##########################################################################
+#   # from now, run linux shell script                                       #
+#   ##########################################################################
+#   builder_class_name, builder_class = get_builder_class_by_template_id(template_id)
+#   builder_instance = builder_class(builder_class_name,input_datas_list)
+#   builder_instance.run()
+#   return Response(input_datas_list)
+#  else:
+#   return Response(status=status.HTTP_400_BAD_REQUEST)
 
- if request.method == 'GET':
+
+
+class show_config_templates_details(APIView):
+
+ permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+ @csrf_exempt
+ def get(self, request, template_id, format=None):
   if request.content_type == 'text/plain':
    if request.QUERY_PARAMS:
     return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -117,18 +167,19 @@ def show_config_templates_details(request, template_id):
   else:
    return Response(status=status.HTTP_400_BAD_REQUEST)
 
- elif request.method == 'POST':
-  
+ @csrf_exempt
+ def post(self, request, template_id, format=None):
+
   if request.content_type == 'application/json':
    #########################################################################################################################################
    # curl -X POST http://192.168.42.135:8080/net_builder/config_templates/1/ -d '[{"name":"junhyo"}]' -H "Content-Type: application/json"  #
-   # print request.POST : only form-data 
+   # print request.POST : only form-data
    # print request.DATA
    ##############################################################################################################
    input_datas_list = request.DATA
    if type(input_datas_list) != types.ListType:
     return Response([{"running_status":"error","error_details":"POST inputs should be list format"}])
-   
+
    ## error input parameters
    not_perfect_component = dictionary_key_is_fully_occupied(template_id,input_datas_list)
    if not_perfect_component:
@@ -143,6 +194,7 @@ def show_config_templates_details(request, template_id):
    return Response(input_datas_list)
   else:
    return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 
 ################################################################################
@@ -224,10 +276,47 @@ def get_builder_class_by_mgmt_swname(mgmt_swname):
   return builder_class_name, builder_class
   break
 
-@csrf_exempt
-@api_view(['GET','DELETE'])
-def show_mgmtsw_details(request,mgmtsw_name):
- if request.method == 'GET':
+#@csrf_exempt
+#@api_view(['GET','DELETE'])
+#def show_mgmtsw_details(request,mgmtsw_name):
+# if request.method == 'GET':
+#  if request.content_type == 'text/plain':
+#   if request.QUERY_PARAMS:
+#    return Response(status=status.HTTP_400_BAD_REQUEST)
+#
+#   #############################################
+#   # find builder class                        #
+#   #############################################
+#   try:
+#    builder_class_name, builder_class = get_builder_class_by_mgmt_swname(mgmtsw_name)
+#    builder_instance = builder_class(builder_class_name,None)
+#   except:
+#    return Response([{"running_status":"error","error_details":"check the mgmt_swname"}],status=status.HTTP_400_BAD_REQUEST)
+#   run_result = builder_instance.detail_view(mgmtsw_name)
+#   return Response(run_result) 
+#
+#  else:
+#   return Response(status=status.HTTP_400_BAD_REQUEST)
+#
+# elif request.method == 'DELETE':
+#  try:
+#   builder_class_name, builder_class = get_builder_class_by_mgmt_swname(mgmtsw_name)
+#   builder_instance = builder_class(builder_class_name,None)
+#  except:
+#   return Response(status=status.HTTP_400_BAD_REQUEST)
+#  run_result = builder_instance.delete(mgmtsw_name)
+#  return Response(run_result)
+#
+# else:
+#  return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class show_mgmtsw_details(APIView):
+ 
+ permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+ 
+ @csrf_exempt
+ def get(self, request, mgmtsw_name, format=None):
   if request.content_type == 'text/plain':
    if request.QUERY_PARAMS:
     return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -241,12 +330,13 @@ def show_mgmtsw_details(request,mgmtsw_name):
    except:
     return Response([{"running_status":"error","error_details":"check the mgmt_swname"}],status=status.HTTP_400_BAD_REQUEST)
    run_result = builder_instance.detail_view(mgmtsw_name)
-   return Response(run_result) 
+   return Response(run_result)
 
   else:
    return Response(status=status.HTTP_400_BAD_REQUEST)
 
- elif request.method == 'DELETE':
+ @csrf_exempt
+ def delete(self, request, mgmtsw_name, format=None):
   try:
    builder_class_name, builder_class = get_builder_class_by_mgmt_swname(mgmtsw_name)
    builder_instance = builder_class(builder_class_name,None)
@@ -254,6 +344,3 @@ def show_mgmtsw_details(request,mgmtsw_name):
    return Response(status=status.HTTP_400_BAD_REQUEST)
   run_result = builder_instance.delete(mgmtsw_name)
   return Response(run_result)
-
- else:
-  return Response(status=status.HTTP_400_BAD_REQUEST)
