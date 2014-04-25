@@ -110,4 +110,71 @@ class KR1B_CS_T2_7050S_NEX(COMMONS_UTILS):
    input_data_dict['success_details']=u'completed'
   return self.select_viewer_items(self.input_datas_list,self.selective_viewer)
    
+ def detail_view(self,mgmtsw_name):
+ 
+  return_result_dict = {} 
+
+  get_value = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_configuration_urls','builder_name',mgmtsw_name)
+  if not get_value:
+   return_result_dict = {}
+   return_result_dict['running_status']=u'error'
+   return_result_dict['running_status']=u'check the mgmt_swname'
+   return return_result_dict
+  return_result_dict['builder_name'] = get_value
+
+  get_value = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_configuration_urls','url',mgmtsw_name)
+  if not get_value:
+   return_result_dict = {}
+   return_result_dict['running_status']=u'error'
+   return_result_dict['running_status']=u'check the mgmt_swname'
+   return return_result_dict
+  return_result_dict['url'] = get_value
+
+  get_value = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_network_usages','mgmt_network',mgmtsw_name)
+  if not get_value:
+   return_result_dict = {}
+   return_result_dict['running_status']=u'error'
+   return_result_dict['running_status']=u'check the mgmt_swname'
+   return return_result_dict
+  return_result_dict['mgmt_network'] = get_value
+
+  get_value = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_network_usages','srv_network',mgmtsw_name)
+  if not get_value:
+   return_result_dict = {}
+   return_result_dict['running_status']=u'error'
+   return_result_dict['running_status']=u'check the mgmt_swname'
+   return return_result_dict
+  return_result_dict['srv_network'] = get_value
+
+  return return_result_dict
+  
+
+
+
+
+ def delete(self,mgmtsw_name):
+  #############################################
+  # database information remove               #
+  # switch_configuration_urls                 #
+  # switch_network_usages                     #
+  # mgmt_network_ip_pools_for_cstack          #
+  # mgmt_network_ip_pools_for_ostack          #
+  # srv_network_ip_pools_for_cstack           #
+  # srv_network_ip_pools_for_ostack           #
+  #############################################
+  deleting_table_list = ['switch_configuration_urls', 
+                         'switch_network_usages', 
+                         'mgmt_network_ip_pools_for_cstack', 
+                         'mgmt_network_ip_pools_for_ostack',
+                         'srv_network_ip_pools_for_cstack',
+                         'srv_network_ip_pools_for_ostack']
+  for table_name in deleting_table_list:
+   self.delete_database_entry_matched_by_mgmt_swname('ip_manager',table_name,mgmtsw_name)
+  #############################################
+  # shell file remove                         #
+  #############################################
+  exec_command = "rm -rf /var/www/html/config/%s" % (mgmtsw_name)
+  os.system(exec_command)
+  result_dict = [{"running_status":"success","success_details":"deleted"}]
+  return self.select_viewer_items(result_dict,self.selective_viewer)
 

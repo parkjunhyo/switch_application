@@ -120,3 +120,29 @@ class commons_utils:
     if key_name not in selective_viewer:
      del local_value[key_name]
   return local_values
+
+ 
+ def delete_database_entry_matched_by_mgmt_swname(self,application_name,database_model_name,mgmt_swname):
+  database_name_to_access = "%s.%s_%s" % (django_database_name,application_name,database_model_name)
+  query_msg = "delete from %s where mgmt_swname=\'%s\';" % (database_name_to_access,mgmt_swname)
+  open_db,open_cursor = self.database_connect()
+  open_cursor.execute(query_msg)
+  self.database_disconnect(open_db, open_cursor)
+
+ def get_items_list_from_database_matched_by_mgmt_swname(self,application_name,database_model_name,entry,mgmt_swname):
+  database_name_to_access = "%s.%s_%s" % (django_database_name,application_name,database_model_name)
+  query_msg = "select %s from %s where mgmt_swname=\'%s\';" % (entry,database_name_to_access,mgmt_swname)
+  open_db,open_cursor = self.database_connect()
+  open_cursor.execute(query_msg)
+  query_results = open_cursor.fetchall()
+  self.database_disconnect(open_db, open_cursor)
+  ##########################################
+  # return result (list)                   #
+  ##########################################
+  return_list = []
+  for result_tuple in query_results:
+   element = result_tuple[0].strip()
+   if element not in return_list:
+    return_list.append(element)
+  return return_list
+

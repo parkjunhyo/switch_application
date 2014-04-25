@@ -8,6 +8,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.http import Http404
 
 from net_builder.MyProgram.templates_list import templates_list as TEMPLATES_LIST
 from net_builder.MyProgram.builder_urls import builder_urls as BUILDER_URLS
@@ -209,6 +210,19 @@ def show_mgmtsw_list(request):
 ################################################################################
 # function : show_mgmtsw_list                                                  #
 ################################################################################
+def get_builder_class_by_mgmt_swname(mgmt_swname):
+ django_database_host = DB_CONNECT_INFO['default']['NAME']
+ query_msg = "select builder_name from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','switch_configuration_urls',mgmt_swname)
+ open_db,open_cursor = database_connect()
+ open_cursor.execute(query_msg)
+ query_results = open_cursor.fetchall() 
+ database_disconnect(open_db,open_cursor)
+ for result_tuple in query_results:
+  builder_class_name = result_tuple[0].strip()
+  builder_class = BUILDER_URLS[builder_class_name]
+  return builder_class_name, builder_class
+  break
+
 def listing_from_database_result_tuple(index, query_results):
  return_list = []
  for result_tuple in query_results:
@@ -224,76 +238,28 @@ def show_mgmtsw_details(request,mgmtsw_name):
    if request.QUERY_PARAMS:
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
-   django_database_host = DB_CONNECT_INFO['default']['NAME']
-   return_result_dict={}
-   ##############################################
-   # find the name matched mgmtsw_name          #
-   ##############################################
-   query_msg = "select builder_name, url from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','switch_configuration_urls',mgmtsw_name)
-   open_db,open_cursor = database_connect()
-   open_cursor.execute(query_msg)
-   query_results = open_cursor.fetchall() 
-   database_disconnect(open_db,open_cursor)
-   if not query_results:
-    return Response(["check the mgmt_swname"],status=status.HTTP_400_BAD_REQUEST)
-   return_result_dict['builder_name'] = listing_from_database_result_tuple(0, query_results)
-   return_result_dict['url'] = listing_from_database_result_tuple(1, query_results)
-   ##############################################
-   # find the mgmt network matched mgmtsw_name  #
-   ##############################################
-   query_msg = "select mgmt_network from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','switch_network_usages',mgmtsw_name)
-   open_db,open_cursor = database_connect()
-   open_cursor.execute(query_msg)
-   query_results = open_cursor.fetchall() 
-   database_disconnect(open_db,open_cursor)
-   if not query_results:
-    return Response(["check the mgmt_swname"],status=status.HTTP_400_BAD_REQUEST)
-   return_result_dict['mgmt_network'] = listing_from_database_result_tuple(0, query_results)
-   ##############################################
-   # find the srv network matched mgmtsw_name   #
-   ##############################################
-   query_msg = "select srv_network from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','switch_network_usages',mgmtsw_name)
-   open_db,open_cursor = database_connect()
-   open_cursor.execute(query_msg)
-   query_results = open_cursor.fetchall()
-   database_disconnect(open_db,open_cursor)
-   if not query_results:
-    return Response(["check the mgmt_swname"],status=status.HTTP_400_BAD_REQUEST)
-   return_result_dict['srv_network'] = listing_from_database_result_tuple(0, query_results)
-
-   return Response(return_result_dict) 
+   #############################################
+   # find builder class                        #
+   #############################################
+   try:
+    builder_class_name, builder_class = get_builder_class_by_mgmt_swname(mgmtsw_name)
+    builder_instance = builder_class(builder_class_name,None)
+   except:
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+   run_result = builder_instance.detail_view(mgmtsw_name)
+   return Response(run_result) 
 
   else:
    return Response(status=status.HTTP_400_BAD_REQUEST)
 
  elif request.method == 'DELETE':
-  #############################################
-  # database information remove               #
-  # switch_configuration_urls                 #
-  # switch_network_usages                     #
-  # mgmt_network_ip_pools_for_cstack          #
-  # mgmt_network_ip_pools_for_ostack          #
-  # srv_network_ip_pools_for_cstack           #
-  # srv_network_ip_pools_for_ostack           #
-  #############################################
-  django_database_host = DB_CONNECT_INFO['default']['NAME']
-  query_msgs = [ 
-       "delete from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','switch_configuration_urls',mgmtsw_name),
-       "delete from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','switch_network_usages',mgmtsw_name),
-       "delete from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','mgmt_network_ip_pools_for_cstack',mgmtsw_name),
-       "delete from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','mgmt_network_ip_pools_for_ostack',mgmtsw_name),
-       "delete from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','srv_network_ip_pools_for_cstack',mgmtsw_name),
-       "delete from %s.%s_%s where mgmt_swname=\'%s\';" % (django_database_host,'ip_manager','srv_network_ip_pools_for_ostack',mgmtsw_name)
-  ]
-  open_db,open_cursor = database_connect()
-  for query_msg in query_msgs:
-   open_cursor.execute(query_msg)
-  database_disconnect(open_db,open_cursor)
-  #############################################
-  # shell file remove                         #
-  #############################################
-  exec_command = "rm -rf /var/www/html/config/%s" % (mgmtsw_name)
-  os.system(exec_command)
-  return Response([{'running_status':'deleted'}])
+  try:
+   builder_class_name, builder_class = get_builder_class_by_mgmt_swname(mgmtsw_name)
+   builder_instance = builder_class(builder_class_name,None)
+  except:
+   return Response(status=status.HTTP_400_BAD_REQUEST)
+  run_result = builder_instance.delete(mgmtsw_name)
+  return Response(run_result)
+
  else:
   return Response(status=status.HTTP_400_BAD_REQUEST)
