@@ -5,12 +5,16 @@ current_directory=`pwd`
 django_home="../django_home"
 django_source="https://www.djangoproject.com/m/releases/1.6/Django-1.6.2.tar.gz"
 django_rest_framework_gitsource="https://github.com/tomchristie/django-rest-framework.git"
+django_cors_headers_gitsource="https://github.com/ottoyiu/django-cors-headers.git"
 
 if [[ ! `which git` ]]
 then
  echo "git is not installed"
  exit
 fi
+
+## requirement packages
+yum install screen -y
 
 ## re-define the version management.
 ## django 
@@ -25,6 +29,12 @@ django_git=`echo $django_rest_framework_gitsource | awk -F'[/]' 'END{print $NF}'
 echo $django_git > $tmp_name
 sed -i 's/'.git'//' $tmp_name
 django_rest_framework=`cat $tmp_name`
+
+## django cors headers
+django_git=`echo $django_cors_headers_gitsource | awk -F'[/]' 'END{print $NF}'`
+echo $django_git > $tmp_name
+sed -i 's/'.git'//' $tmp_name
+django_cors_headers=`cat $tmp_name`
 
 if [[ ! -d $django_home ]]
 then
@@ -70,6 +80,21 @@ then
  python setup.py install
  cd $current_directory
 fi
+
+if [[ ! -d $django_home/$django_cors_headers ]]
+then
+ cd $django_home
+ git clone $django_cors_headers_gitsource
+ if [[ ! -d ./$django_cors_headers ]]
+ then
+  echo "django cors header download was failed"
+  exit
+ fi
+ cd $django_cors_headers
+ python setup.py install
+ cd $current_directory
+fi
+
 ############################################################################
 ####                 django project creationg                          #####
 ############################################################################
