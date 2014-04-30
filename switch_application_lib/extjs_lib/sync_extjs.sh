@@ -40,7 +40,7 @@ do
   ###########################################
   # jump the directory not to make link     #
   ###########################################
-  if [[ $directory_name = 'extjs' ]]
+  if [[ $directory_name == 'extjs' ]]
   then
    continue
   fi
