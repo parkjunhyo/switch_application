@@ -130,7 +130,9 @@ def get_builder_class_by_template_id(template_id):
 #   # print request.DATA
 #   ##############################################################################################################
 #   input_datas_list = request.DATA
-#   if type(input_datas_list) != types.ListType:
+#   if type(input_datas_list) == types.DictType:
+#    input_datas_list = [ input_datas_list ]
+#   elif type(input_datas_list) != types.ListType:
 #    return Response([{"running_status":"error","error_details":"POST inputs should be list format"}])
 #   
 #   ## error input parameters
@@ -177,7 +179,9 @@ class show_config_templates_details(APIView):
    # print request.DATA
    ##############################################################################################################
    input_datas_list = request.DATA
-   if type(input_datas_list) != types.ListType:
+   if type(input_datas_list) == types.DictType:
+    input_datas_list = [ input_datas_list ]
+   elif type(input_datas_list) != types.ListType:
     return Response([{"running_status":"error","error_details":"POST inputs should be list format"}])
 
    ## error input parameters
