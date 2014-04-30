@@ -14,7 +14,7 @@ then
 fi
 
 ## requirement packages
-yum install screen -y
+yum install -y screen MySQL-python
 
 ## re-define the version management.
 ## django 
