@@ -188,6 +188,8 @@ class show_config_templates_details(APIView):
  @csrf_exempt
  def post(self, request, template_id, format=None):
 
+  content = {'user': unicode(request.user),'auth': unicode(request.auth)}
+
   if request.content_type == 'application/json':
    #########################################################################################################################################
    # curl -X POST http://192.168.42.135:8080/net_builder/config_templates/1/ -d '[{"name":"junhyo"}]' -H "Content-Type: application/json"  #
@@ -349,6 +351,7 @@ class show_mgmtsw_details(APIView):
  
  @csrf_exempt
  def get(self, request, mgmtsw_name, format=None):
+
   if request.content_type == 'text/plain':
    if request.QUERY_PARAMS:
     return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -369,6 +372,9 @@ class show_mgmtsw_details(APIView):
 
  @csrf_exempt
  def delete(self, request, mgmtsw_name, format=None):
+  
+  content = {'user': unicode(request.user),'auth': unicode(request.auth)}
+
   try:
    builder_class_name, builder_class = get_builder_class_by_mgmt_swname(mgmtsw_name)
    builder_instance = builder_class(builder_class_name,None)
