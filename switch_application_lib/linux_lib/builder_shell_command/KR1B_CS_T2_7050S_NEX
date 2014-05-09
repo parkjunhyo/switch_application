@@ -54,6 +54,7 @@ then
  chmod 777 $uptor_config_file
 else
  echo "mgmt_desc_uptor error : $mgmt_desc_uptor has been already existed"
+ rm -rf $mgmt_config_dir
  exit
 fi
 
@@ -64,6 +65,7 @@ then
  chmod 777 $downtor_config_file
 else
  echo "mgmt_desc_downtor error : $mgmt_desc_downtor has been already existed"
+ rm -rf $mgmt_config_dir
  exit
 fi
 
