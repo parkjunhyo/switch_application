@@ -8,12 +8,16 @@ from rest_framework.parsers import JSONParser
 from django.http import Http404
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.decorators import permission_classes
+from rest_framework.decorators import authentication_classes
 from rest_framework.response import Response
 from django.http import Http404
 
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework import permissions
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from net_builder.MyProgram.templates_list import templates_list as TEMPLATES_LIST
 from net_builder.MyProgram.builder_urls import builder_urls as BUILDER_URLS
@@ -27,6 +31,12 @@ import MySQLdb
 ################################################################################
 @csrf_exempt
 @api_view(['GET'])
+################################################################################
+# authentication                                                               #
+################################################################################
+# @authentication_classes((SessionAuthentication, BasicAuthentication))
+# @permission_classes((IsAuthenticated,))
+################################################################################
 def show_config_templates_list(request):
  if request.method == 'GET':
 
@@ -154,7 +164,13 @@ def get_builder_class_by_template_id(template_id):
 
 class show_config_templates_details(APIView):
 
- permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+ authentication_classes = (SessionAuthentication, BasicAuthentication)
+ permission_classes = (IsAuthenticated,)
+ #############################################################################################
+ # default by http://www.django-rest-framework.org/tutorial/4-authentication-and-permissions #
+ #############################################################################################
+ # permission_classes = (permissions.IsAuthenticatedOrReadOnly,)                             #
+ #############################################################################################
 
  @csrf_exempt
  def get(self, request, template_id, format=None):
@@ -227,6 +243,12 @@ def database_disconnect(open_db,open_cursor):
 
 @csrf_exempt
 @api_view(['GET'])
+#####################################################################
+# authentication                                                    #
+#####################################################################
+# @authentication_classes((SessionAuthentication, BasicAuthentication))
+# @permission_classes((IsAuthenticated,))
+#####################################################################
 def show_mgmtsw_list(request):
 
  if request.method == 'GET':
@@ -265,7 +287,7 @@ def show_mgmtsw_list(request):
 
 
 ################################################################################
-# function : show_mgmtsw_list                                                  #
+# function : show_mgmtsw_details                                               #
 ################################################################################
 def get_builder_class_by_mgmt_swname(mgmt_swname):
  django_database_host = DB_CONNECT_INFO['default']['NAME']
@@ -316,8 +338,14 @@ def get_builder_class_by_mgmt_swname(mgmt_swname):
 
 
 class show_mgmtsw_details(APIView):
- 
- permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+ authentication_classes = (SessionAuthentication, BasicAuthentication)
+ permission_classes = (IsAuthenticated,)
+ #############################################################################################
+ # default by http://www.django-rest-framework.org/tutorial/4-authentication-and-permissions #
+ #############################################################################################
+ # permission_classes = (permissions.IsAuthenticatedOrReadOnly,)                             #
+ ############################################################################################# 
  
  @csrf_exempt
  def get(self, request, mgmtsw_name, format=None):
