@@ -112,6 +112,7 @@ class KR1B_CS_T2_7050S_NEX(COMMONS_UTILS):
    
  def detail_view(self,mgmtsw_name):
   return_result_dict = {} 
+  return_result_dict['running_status'] = 'success'
   return_result_dict['builder_name'] = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_configuration_urls','builder_name',mgmtsw_name)
   return_result_dict['url'] = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_configuration_urls','url',mgmtsw_name)
   return_result_dict['mgmt_network'] = self.get_items_list_from_database_matched_by_mgmt_swname('ip_manager','switch_network_usages','mgmt_network',mgmtsw_name)
