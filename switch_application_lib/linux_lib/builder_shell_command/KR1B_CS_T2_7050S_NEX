@@ -87,6 +87,14 @@ done
 sed -i 's/CHANGE_MGMT_IPADDRNET/'$upsrvsw_mip'\/'$mgmt_subnet_prefixlen'/' $uptor_config_file
 sed -i 's/CHANGE_MGMT_IPADDRNET/'$dnsrvsw_mip'\/'$mgmt_subnet_prefixlen'/' $downtor_config_file
 
+## update the MLAG information
+mlag_up_ip='169.254.1.1'
+mlag_down_ip='169.254.1.2'
+sed -i 's/MLAG_MY_IPADDR/'$mlag_up_ip'\/30/' $uptor_config_file
+sed -i 's/MLAG_MY_IPADDR/'$mlag_down_ip'\/30/' $downtor_config_file
+sed -i 's/MLAG_PEER_IPADDR/'$mlag_down_ip'/' $uptor_config_file
+sed -i 's/MLAG_PEER_IPADDR/'$mlag_up_ip'/' $downtor_config_file
+
 ## return 
 outer_address=`route | grep -i 'default' | awk '{print $8}' | xargs ifconfig | grep -i 'inet addr' | awk -F'[ :]' '{print $13}'`
 outer_url="http://$outer_address/config/$mgmt_swname"

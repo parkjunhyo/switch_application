@@ -297,9 +297,7 @@ interface Management1
 interface Vlan4094
    description MLAG-PEER
    no autostate
-   ip address 169.254.1.1/30
-!
-ip virtual-router mac-address 00:1c:73:00:00:99
+   ip address MLAG_MY_IPADDR
 !
 ip route vrf Management 0.0.0.0/0 CHANGE_MGMT_GW_VIP
 !
@@ -309,7 +307,7 @@ ip routing vrf Management
 mlag configuration
    domain-id MLAG-PEER
    local-interface Vlan4094
-   peer-address 169.254.1.2
+   peer-address MLAG_PEER_IPADDR
    peer-link Port-Channel1000
 !
 banner login
