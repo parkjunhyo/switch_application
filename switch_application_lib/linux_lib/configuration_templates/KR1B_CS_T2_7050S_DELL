@@ -1,0 +1,314 @@
+!
+terminal length 25
+!
+logging vrf Management host 10.0.8.46
+logging vrf Management host 10.2.2.81
+!
+hostname CHANGE_HOSTNAME
+!
+ntp server CHANGE_NTP_2
+ntp server CHANGE_NTP_1 prefer
+!
+snmp-server community ktcloudnw! ro
+snmp-server community start@1cse ro
+snmp-server host 10.0.8.46 version 2c ktcloudnw!
+snmp-server enable traps
+snmp-server vrf Management
+!
+spanning-tree mode mstp
+no spanning-tree vlan 4094
+!
+no aaa root
+!
+username admin secret 0 @adm1n
+!
+clock timezone Asia/Seoul
+!
+vlan 5
+   name CLOUD_STORAGE
+!
+vlan 6-9
+   name CLOUD_PUBLIC
+!
+vlan 50-2999
+   name CLOUD_PRIVATE
+!
+vlan 3000-3500
+   name CLOUD_MULTINIC
+!
+vlan 4094
+   name MLAGPEER
+   trunk group MLAG-PEER
+!
+interface Port-Channel601
+   description CHANGE_UPLINK_DESC
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+   mlag 601
+!
+interface Port-Channel1000
+   description Mlag-Peerlink
+   switchport trunk allowed vlan 5-9,50-3500,4094
+   switchport mode trunk
+   switchport trunk group MLAG-PEER
+!
+interface Ethernet1
+   description Cnode#1-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet2
+   description Cnode#1-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet3
+   description Cnode#2-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet4
+   description Cnode#2-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet5
+   description Cnode#3-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet6
+   description Cnode#3-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet7
+   description Cnode#4-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet8
+   description Cnode#4-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet9
+   description Cnode#5-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet10
+   description Cnode#5-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet11
+   description Cnode#6-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet12
+   description Cnode#6-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet13
+   description Cnode#7-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet14
+   description Cnode#7-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet15
+   description Cnode#8-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet16
+   description Cnode#8-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet17
+   description Cnode#9-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet18
+   description Cnode#9-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet19
+   description Cnode#10-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet20
+   description Cnode#10-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet21
+   description Cnode#11-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet22
+   description Cnode#11-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet23
+   description Cnode#12-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet24
+   description Cnode#12-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet25
+   description Cnode#13-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet26
+   description Cnode#13-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet27
+   description Cnode#14-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet28
+   description Cnode#14-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet29
+   description Cnode#15-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet30
+   description Cnode#15-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet31
+   description Cnode#16-Service
+   switchport trunk allowed vlan 6-9,50-3500
+   switchport mode trunk
+!
+interface Ethernet32
+   description Cnode#16-Storage
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet33
+!
+interface Ethernet34
+!
+interface Ethernet35
+   description s-node #1-NIC1-1
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet36
+   description s-node #1-NIC1-2
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet37
+   description s-node #2-NIC1-1
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet38
+   description s-node #2-NIC1-2
+   switchport access vlan 5
+   spanning-tree portfast
+!
+interface Ethernet39
+!
+interface Ethernet40
+!
+interface Ethernet41
+   description Mlag-Peerlink
+   channel-group 1000 mode active
+!
+interface Ethernet42
+   description Mlag-Peerlink
+   channel-group 1000 mode active
+!
+interface Ethernet43
+   description UP-link
+   channel-group 601 mode active
+!
+interface Ethernet44
+!
+interface Ethernet45
+!
+interface Ethernet46
+!
+interface Ethernet47
+!
+interface Ethernet48
+!
+interface Ethernet49
+!
+interface Ethernet50
+!
+interface Ethernet51
+!
+interface Ethernet52
+!
+interface Management1
+   description CHANGE_MGMT_DESC
+   ip address CHANGE_MGMT_IPADDRNET
+!
+interface Vlan4094
+   description MLAG-PEER
+   no autostate
+   ip address MLAG_MY_IPADDR
+!
+ip route vrf Management 0.0.0.0/0 CHANGE_MGMT_GW_VIP
+!
+ip routing
+ip routing vrf Management
+!
+mlag configuration
+   domain-id MLAG-PEER
+   local-interface Vlan4094
+   peer-address MLAG_PEER_IPADDR
+   peer-link Port-Channel1000
+!
+banner login
+======================================================================
+                        !!! Access Warning !!! 
+======================================================================
+1. You connected an Unauthorised NETWORK device.
+   If you were not enrolled, you should log out from this device.
+
+2. We are record your histoy regardless of your agreement.
+
+3. After you connect this device, if you try to habit illegal 
+   and then you receive punishment for the crime.
+----------------------------------------------------------------------
+EOF
+!
+management console
+   idle-timeout 5
+!
+management telnet
+   no shutdown
+   idle-timeout 5
+!
+end
