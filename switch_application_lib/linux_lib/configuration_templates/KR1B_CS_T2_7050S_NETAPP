@@ -271,6 +271,7 @@ interface Ethernet42
 interface Ethernet43
    description UP-link
    channel-group 601 mode active
+   shutdown
 !
 interface Ethernet44
 !
