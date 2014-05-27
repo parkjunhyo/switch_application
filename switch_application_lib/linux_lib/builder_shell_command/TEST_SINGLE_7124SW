@@ -1,0 +1,74 @@
+#! /bin/env bash
+
+#####################################################################################################################################
+### File : MyDjango_switch_computer/django_switch_net_boot/MyProgram+Builder_configuration.py                                       #
+### Class : TEST_SINGLE_7124SW                                                                                                      #
+### Parameter for input :                                                                                                           #
+###   self.builder_arguments = "%(mgmt_swname)s %(mgmt_desc)s %(mgmt_ipnet)s %(gateway_ip)s"                                     #
+#####################################################################################################################################
+
+##### input parameter confirmation
+file_name=$0
+if [[ $# != 4 ]]
+then
+ echo "the input parameters are not enough"
+ exit
+fi
+
+##### input paramter re-arrange to build the configuration
+mgmt_swname=$1
+mgmt_desc=$2
+mgmt_ipnet=$3
+gateway_ip=$4
+
+##### from here, only ip is necessary (without subnet size)
+mgmtsw_ip=`echo $mgmt_ipnet | awk -F'[/]' 'END{print $1}'`
+
+##### necessary extra information gethering
+mgmt_subnet_prefixlen=`echo $mgmt_ipnet | awk -F'[/]' 'END{print $NF}'`
+
+##### get the tempates file 
+form_file="/home/switch_application/switch_application/configuration_templates/TEST_SINGLE_7124SW"
+
+##### create the directory to store generated configuration
+mgmt_config_dir="/var/www/html/config/$mgmt_swname"
+if [[ ! -d $mgmt_config_dir ]]
+then
+ mkdir -p $mgmt_config_dir
+ chmod 777 $mgmt_config_dir
+else
+ echo "mgmt_swname error : $mgmt_config_dir has been already existed"
+ exit
+fi
+
+##### copy the configuration file from template
+sw_config_file=$mgmt_config_dir/$mgmt_desc
+if [[ ! -f $sw_config_file ]]
+then
+ cp $form_file $sw_config_file
+ chmod 777 $sw_config_file
+else
+ echo "mgmt_desc error : $mgmt_desc has been already existed"
+ rm -rf $mgmt_config_dir
+ exit
+fi
+
+#######################################################################################
+##################### start the change parameter with input variables #################
+#######################################################################################
+declare -a tors_array=($sw_config_file)
+
+## common part, replace the variables
+for tor_item in ${tors_array[*]}
+do
+ sed -i 's/CHANGE_MGMT_GW_IP/'$gateway_ip'/' $tor_item
+done
+
+## unique part, replace the variables
+sed -i 's/CHANGE_MGMT_IPADDRNET/'$mgmtsw_ip'\/'$mgmt_subnet_prefixlen'/' $sw_config_file
+
+## return 
+outer_address=`route | grep -i 'default' | awk '{print $8}' | xargs ifconfig | grep -i 'inet addr' | awk -F'[ :]' '{print $13}'`
+outer_url="http://$outer_address/config/$mgmt_swname"
+echo "success : $outer_url"
+exit

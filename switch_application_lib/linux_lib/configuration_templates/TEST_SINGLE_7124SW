@@ -1,0 +1,93 @@
+!
+terminal length 25
+!
+hostname CHANGE_HOSTNAME
+!
+spanning-tree mode mstp
+no spanning-tree vlan 4094
+!
+no aaa root
+!
+username admin secret 0 @adm1n
+!
+clock timezone Asia/Seoul
+!
+interface Ethernet1
+!
+interface Ethernet2
+!
+interface Ethernet3
+!
+interface Ethernet4
+!
+interface Ethernet5
+!
+interface Ethernet6
+!
+interface Ethernet7
+!
+interface Ethernet8
+!
+interface Ethernet9
+!
+interface Ethernet10
+!
+interface Ethernet11
+!
+interface Ethernet12
+!
+interface Ethernet13
+!
+interface Ethernet14
+!
+interface Ethernet15
+!
+interface Ethernet16
+!
+interface Ethernet17
+!
+interface Ethernet18
+!
+interface Ethernet19
+!
+interface Ethernet20
+!
+interface Ethernet21
+!
+interface Ethernet22
+!
+interface Ethernet23
+!
+interface Ethernet24
+!
+interface Management1
+   description CHANGE_MGMT_DESC
+   ip address CHANGE_MGMT_IPADDRNET
+!
+ip route 10.0.0.0/8 CHANGE_MGMT_GW_IP
+ip route 20.0.0.0/8 CHANGE_MGMT_GW_IP
+!
+ip routing
+!
+banner login
+======================================================================
+                        !!! Access Warning !!! 
+======================================================================
+1. You connected an Unauthorised NETWORK device.
+   If you were not enrolled, you should log out from this device.
+
+2. We are record your histoy regardless of your agreement.
+
+3. After you connect this device, if you try to habit illegal 
+   and then you receive punishment for the crime.
+----------------------------------------------------------------------
+EOF
+!
+management console
+   idle-timeout 5
+!
+management telnet
+   no shutdown
+   idle-timeout 5
+!
+end
