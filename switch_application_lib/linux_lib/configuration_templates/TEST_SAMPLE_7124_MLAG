@@ -1,0 +1,120 @@
+!
+terminal length 25
+!
+hostname CHANGE_HOSTNAME
+!
+snmp-server vrf Management
+!
+spanning-tree mode mstp
+no spanning-tree vlan 4094
+!
+no aaa root
+!
+username admin secret 0 @adm1n
+!
+clock timezone Asia/Seoul
+!
+vlan 4094
+   name MLAGPEER
+   trunk group MLAG-PEER
+!
+interface Port-Channel1000
+   description Mlag-Peerlink
+   switchport trunk allowed vlan 4094
+   switchport mode trunk
+   switchport trunk group MLAG-PEER
+!
+interface Ethernet1
+!
+interface Ethernet2
+!
+interface Ethernet3
+!
+interface Ethernet4
+!
+interface Ethernet5
+!
+interface Ethernet6
+!
+interface Ethernet7
+!
+interface Ethernet8
+!
+interface Ethernet9
+!
+interface Ethernet10
+!
+interface Ethernet11
+!
+interface Ethernet12
+!
+interface Ethernet13
+!
+interface Ethernet14
+!
+interface Ethernet15
+!
+interface Ethernet16
+!
+interface Ethernet17
+!
+interface Ethernet18
+!
+interface Ethernet19
+!
+interface Ethernet20
+!
+interface Ethernet21
+   description Mlag-Peerlink
+   channel-group 1000 mode active
+!
+interface Ethernet22
+   description Mlag-Peerlink
+   channel-group 1000 mode active
+!
+interface Ethernet23
+!
+interface Ethernet24
+!
+interface Management1
+   description CHANGE_MGMT_DESC
+   ip address CHANGE_MGMT_IPADDRNET
+!
+interface Vlan4094
+   description MLAG-PEER
+   no autostate
+   ip address MLAG_MY_IPADDR
+!
+ip route vrf Management 0.0.0.0/0 CHANGE_MGMT_GW_VIP
+!
+ip routing
+ip routing vrf Management
+!
+mlag configuration
+   domain-id MLAG-PEER
+   local-interface Vlan4094
+   peer-address MLAG_PEER_IPADDR
+   peer-link Port-Channel1000
+!
+banner login
+======================================================================
+                        !!! Access Warning !!! 
+======================================================================
+1. You connected an Unauthorised NETWORK device.
+   If you were not enrolled, you should log out from this device.
+
+2. We are record your histoy regardless of your agreement.
+
+3. After you connect this device, if you try to habit illegal 
+   and then you receive punishment for the crime.
+----------------------------------------------------------------------
+EOF
+!
+management console
+   idle-timeout 5
+!
+management telnet
+   no shutdown
+   idle-timeout 5
+!
+end

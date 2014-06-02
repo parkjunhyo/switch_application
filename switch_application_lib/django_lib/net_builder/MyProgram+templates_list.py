@@ -1,11 +1,21 @@
 templates_list = [
  {
   "id":1000,
-  "builder":'TEST_SINGLE_7124SW',
+  "builder":'TEST_SAMPLE_7124_SINGLE_MGMT_ONLY',
   "params":[ "mgmt_swname",
              "mgmt_desc",
              "mgmt_ipnet",
              "gateway_ip" ],
+ },
+ {
+  "id":1001,
+  "builder":'TEST_SAMPLE_7124_MLAG',
+  "params":[ "mgmt_swname",
+             "mgmt_desc_uptor",
+             "mgmt_desc_downtor",
+             "mgmt_ip_uptor",
+             "mgmt_ip_downtor",
+             "mgmt_gateway_vip" ],
  },
  {
   "id":1,

@@ -1,0 +1,99 @@
+#! /bin/env bash
+
+#######################################################################################################################################################
+### File : MyDjango_switch_computer/django_switch_net_boot/MyProgram+Builder_configuration.py                                                         #
+### Class : TEST_SAMPLE_7124_MLAG                                                                                                                     #
+### Parameter for input :                                                                                                                             #
+###   self.builder_arguments = "%(mgmt_swname)s %(mgmt_desc_uptor)s %(mgmt_desc_downtor)s %(mgmt_ip_uptor)s %(mgmt_ip_downtor)s %(mgmt_gateway_vip)s" #
+#######################################################################################################################################################
+
+##### input parameter confirmation
+file_name=$0
+if [[ $# != 6 ]]
+then
+ echo "the input parameters are not enough"
+ exit
+fi
+
+##### input paramter re-arrange to build the configuration
+mgmt_swname=$1
+mgmt_desc_uptor=$2
+mgmt_desc_downtor=$3
+mgmt_ip_uptor=$4
+mgmt_ip_downtor=$5
+mgmt_gateway_vip=$6
+
+##### from here, only ip is necessary (without subnet size)
+mgmt_ip_uptor_wo_subnet=`echo $mgmt_ip_uptor | awk -F'[/]' 'END{print $1}'`
+mgmt_ip_downtor_wo_subnet=`echo $mgmt_ip_downtor | awk -F'[/]' 'END{print $1}'`
+mgmt_gateway_vip_wo_subnet=`echo $mgmt_gateway_vip | awk -F'[/]' 'END{print $1}'`
+
+##### necessary extra information gethering
+mgmt_subnet_prefixlen=`echo $mgmt_ip_uptor | awk -F'[/]' 'END{print $NF}'`
+
+##### get the tempates file 
+form_file="/home/switch_application/switch_application/configuration_templates/TEST_SAMPLE_7124_MLAG"
+
+##### create the directory to store generated configuration
+mgmt_config_dir="/var/www/html/config/$mgmt_swname"
+if [[ ! -d $mgmt_config_dir ]]
+then
+ mkdir -p $mgmt_config_dir
+ chmod 777 $mgmt_config_dir
+else
+ echo "mgmt_swname error : $mgmt_config_dir has been already existed"
+ exit
+fi
+
+##### copy the configuration file from template
+uptor_config_file=$mgmt_config_dir/$mgmt_desc_uptor
+if [[ ! -f $uptor_config_file ]]
+then
+ cp $form_file $uptor_config_file
+ chmod 777 $uptor_config_file
+else
+ echo "mgmt_desc_uptor error : $mgmt_desc_uptor has been already existed"
+ rm -rf $mgmt_config_dir
+ exit
+fi
+
+downtor_config_file=$mgmt_config_dir/$mgmt_desc_downtor
+if [[ ! -f $downtor_config_file ]]
+then
+ cp $form_file $downtor_config_file
+ chmod 777 $downtor_config_file
+else
+ echo "mgmt_desc_downtor error : $mgmt_desc_downtor has been already existed"
+ rm -rf $mgmt_config_dir
+ exit
+fi
+
+
+#######################################################################################
+##################### start the change parameter with input variables #################
+#######################################################################################
+declare -a tors_array=($uptor_config_file $downtor_config_file)
+
+## common part, replace the variables
+for tor_item in ${tors_array[*]}
+do
+ sed -i 's/CHANGE_MGMT_GW_VIP/'$mgmt_gateway_vip_wo_subnet'/' $tor_item
+done
+
+## unique part, replace the variables
+sed -i 's/CHANGE_MGMT_IPADDRNET/'$mgmt_ip_uptor_wo_subnet'\/'$mgmt_subnet_prefixlen'/' $uptor_config_file
+sed -i 's/CHANGE_MGMT_IPADDRNET/'$mgmt_ip_downtor_wo_subnet'\/'$mgmt_subnet_prefixlen'/' $downtor_config_file
+
+## update the MLAG information
+mlag_up_ip='169.254.1.1'
+mlag_down_ip='169.254.1.2'
+sed -i 's/MLAG_MY_IPADDR/'$mlag_up_ip'\/30/' $uptor_config_file
+sed -i 's/MLAG_MY_IPADDR/'$mlag_down_ip'\/30/' $downtor_config_file
+sed -i 's/MLAG_PEER_IPADDR/'$mlag_down_ip'/' $uptor_config_file
+sed -i 's/MLAG_PEER_IPADDR/'$mlag_up_ip'/' $downtor_config_file
+
+## return 
+outer_address=`route | grep -i 'default' | awk '{print $8}' | xargs ifconfig | grep -i 'inet addr' | awk -F'[ :]' '{print $13}'`
+outer_url="http://$outer_address/config/$mgmt_swname"
+echo "success : $outer_url"
+exit

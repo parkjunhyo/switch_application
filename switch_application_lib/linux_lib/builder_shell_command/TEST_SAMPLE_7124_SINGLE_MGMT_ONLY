@@ -28,7 +28,7 @@ mgmtsw_ip=`echo $mgmt_ipnet | awk -F'[/]' 'END{print $1}'`
 mgmt_subnet_prefixlen=`echo $mgmt_ipnet | awk -F'[/]' 'END{print $NF}'`
 
 ##### get the tempates file 
-form_file="/home/switch_application/switch_application/configuration_templates/TEST_SINGLE_7124SW"
+form_file="/home/switch_application/switch_application/configuration_templates/TEST_SAMPLE_7124_SINGLE_MGMT_ONLY"
 
 ##### create the directory to store generated configuration
 mgmt_config_dir="/var/www/html/config/$mgmt_swname"
