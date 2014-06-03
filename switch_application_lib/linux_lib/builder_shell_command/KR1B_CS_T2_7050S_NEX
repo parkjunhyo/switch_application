@@ -4,7 +4,7 @@
 ### File : MyDjango_switch_computer/django_switch_net_boot/MyProgram+Builder_configuration.py                                       #
 ### Class : KR1B_CS_T2_7050S_NEX                                                                                                    #
 ### Parameter for input :                                                                                                           #
-###   self.builder_arguments = "%(mgmt_swname)s %(mgmt_desc_uptor)s %(mgmt_desc_downtor)s %(mgmt_network)s"                         #
+###   self.builder_arguments = "%(mgmt_swname)s %(mgmt_portno_uptor)s %(mgmt_portno_downtor)s %(mgmt_network)s"                     #
 ###   self.builder_extra_arguments = "%(gateway_vip)s %(gateway_r1)s %(gateway_r2)s %(mgmtsw_mip)s %(upsrvsw_mip)s %(dnsrvsw_mip)s" #
 #####################################################################################################################################
 

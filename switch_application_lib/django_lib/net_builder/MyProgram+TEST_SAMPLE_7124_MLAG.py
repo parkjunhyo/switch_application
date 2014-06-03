@@ -16,7 +16,8 @@ class TEST_SAMPLE_7124_MLAG(COMMONS_UTILS):
   #################################################
   # shell script input arguments definition       #
   #################################################
-  self.linux_args = "%(mgmt_swname)s %(mgmt_desc_uptor)s %(mgmt_desc_downtor)s %(mgmt_ip_uptor)s %(mgmt_ip_downtor)s %(mgmt_gateway_vip)s"
+  # self.linux_args = "%(mgmt_swname)s %(mgmt_desc_uptor)s %(mgmt_desc_downtor)s %(mgmt_ip_uptor)s %(mgmt_ip_downtor)s %(mgmt_gateway_vip)s"
+  self.linux_args = "%(mgmt_swname)s %(mgmt_portno_uptor)s %(mgmt_portno_downtor)s %(mgmt_ip_uptor)s %(mgmt_ip_downtor)s %(mgmt_gateway_vip)s"
 
   #################################################
   # display parameter, similar with @api_view     #
@@ -27,12 +28,19 @@ class TEST_SAMPLE_7124_MLAG(COMMONS_UTILS):
  def run(self):
   for input_data_dict in self.input_datas_list:
    requested_swname = input_data_dict['mgmt_swname']
-   requested_mgmt_desc_uptor = input_data_dict['mgmt_desc_uptor']
-   requested_mgmt_desc_downtor = input_data_dict['mgmt_desc_downtor']
    requested_mgmt_ip_uptor = input_data_dict['mgmt_ip_uptor']
    requested_mgmt_ip_downtor = input_data_dict['mgmt_ip_downtor']
    requested_mgmt_gateway_vip = input_data_dict['mgmt_gateway_vip']
 
+   #################################################
+   # Port Number extraction (only number string)   #
+   #################################################
+   Ethernet_pattern=re.compile("Ethernet",re.I)
+   Dash_pattern=re.compile("/",re.I)
+   requested_mgmt_portno = ['mgmt_portno_uptor','mgmt_portno_downtor']
+   for mgmt_portno in requested_mgmt_portno:
+    Ethernet_number = re.split(Ethernet_pattern,input_data_dict[mgmt_portno])[-1]
+    input_data_dict[mgmt_portno] = re.split(Dash_pattern,Ethernet_number)[-1]
 
    #################################################
    # confirmation of mgmt swname is                #

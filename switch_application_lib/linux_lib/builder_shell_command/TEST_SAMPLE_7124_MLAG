@@ -4,7 +4,7 @@
 ### File : MyDjango_switch_computer/django_switch_net_boot/MyProgram+Builder_configuration.py                                                         #
 ### Class : TEST_SAMPLE_7124_MLAG                                                                                                                     #
 ### Parameter for input :                                                                                                                             #
-###   self.builder_arguments = "%(mgmt_swname)s %(mgmt_desc_uptor)s %(mgmt_desc_downtor)s %(mgmt_ip_uptor)s %(mgmt_ip_downtor)s %(mgmt_gateway_vip)s" #
+###   self.builder_arguments = "%(mgmt_swname)s %(mgmt_portno_uptor)s %(mgmt_portno_downtor)s %(mgmt_ip_uptor)s %(mgmt_ip_downtor)s %(mgmt_gateway_vip)s" #
 #######################################################################################################################################################
 
 ##### input parameter confirmation

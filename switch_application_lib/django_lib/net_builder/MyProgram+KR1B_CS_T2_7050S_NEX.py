@@ -16,7 +16,8 @@ class KR1B_CS_T2_7050S_NEX(COMMONS_UTILS):
   #################################################
   # shell script input arguments definition       #
   #################################################
-  self.linux_args = "%(mgmt_swname)s %(mgmt_desc_uptor)s %(mgmt_desc_downtor)s %(mgmt_network)s"
+  # self.linux_args = "%(mgmt_swname)s %(mgmt_desc_uptor)s %(mgmt_desc_downtor)s %(mgmt_network)s"
+  self.linux_args = "%(mgmt_swname)s %(mgmt_portno_uptor)s %(mgmt_portno_downtor)s %(mgmt_network)s"
   self.extra_linux_args = "%(gateway_vip)s %(gateway_r1)s %(gateway_r2)s %(mgmtsw_mip)s %(upsrvsw_mip)s %(dnsrvsw_mip)s"
 
   #################################################
@@ -30,6 +31,16 @@ class KR1B_CS_T2_7050S_NEX(COMMONS_UTILS):
   for input_data_dict in self.input_datas_list:
    requested_swname = input_data_dict['mgmt_swname']
    requested_network = input_data_dict['mgmt_network']
+   #################################################
+   # Port Number extraction (only number string)   #
+   #################################################
+   Ethernet_pattern=re.compile("Ethernet",re.I)
+   Dash_pattern=re.compile("/",re.I)
+   requested_mgmt_portno = ['mgmt_portno_uptor','mgmt_portno_downtor']
+   for mgmt_portno in requested_mgmt_portno:
+    Ethernet_number = re.split(Ethernet_pattern,input_data_dict[mgmt_portno])[-1]
+    input_data_dict[mgmt_portno] = re.split(Dash_pattern,Ethernet_number)[-1]
+
    #################################################
    # confirmation of mgmt swname is                #
    #################################################

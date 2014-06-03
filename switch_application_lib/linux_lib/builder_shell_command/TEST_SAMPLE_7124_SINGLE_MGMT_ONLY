@@ -4,7 +4,7 @@
 ### File : MyDjango_switch_computer/django_switch_net_boot/MyProgram+Builder_configuration.py                                       #
 ### Class : TEST_SINGLE_7124SW                                                                                                      #
 ### Parameter for input :                                                                                                           #
-###   self.builder_arguments = "%(mgmt_swname)s %(mgmt_desc)s %(mgmt_ipnet)s %(gateway_ip)s"                                     #
+###   self.builder_arguments = "%(mgmt_swname)s %(mgmt_portno)s %(mgmt_ipnet)s %(gateway_ip)s"                                     #
 #####################################################################################################################################
 
 ##### input parameter confirmation
