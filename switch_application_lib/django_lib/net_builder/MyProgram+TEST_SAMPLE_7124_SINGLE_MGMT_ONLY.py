@@ -28,6 +28,10 @@ class TEST_SAMPLE_7124_SINGLE_MGMT_ONLY(COMMONS_UTILS):
 
  def run(self):
   for input_data_dict in self.input_datas_list:
+   #################################################
+   # switch-name middle bar exchanger              #
+   #################################################
+   input_data_dict['mgmt_swname'] = re.sub(r"_",r"-",input_data_dict['mgmt_swname'])
    requested_swname = input_data_dict['mgmt_swname']
    requested_mgmt_ipnet = input_data_dict['mgmt_ipnet']
    requested_gateway_ip = input_data_dict['gateway_ip']

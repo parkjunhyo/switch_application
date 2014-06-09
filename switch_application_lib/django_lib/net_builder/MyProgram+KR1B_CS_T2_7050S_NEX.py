@@ -29,6 +29,10 @@ class KR1B_CS_T2_7050S_NEX(COMMONS_UTILS):
 
  def run(self):
   for input_data_dict in self.input_datas_list:
+   #################################################
+   # switch-name middle bar exchanger              #
+   #################################################
+   input_data_dict['mgmt_swname'] = re.sub(r"_",r"-",input_data_dict['mgmt_swname'])
    requested_swname = input_data_dict['mgmt_swname']
    requested_network = input_data_dict['mgmt_network']
    #################################################

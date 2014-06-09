@@ -27,6 +27,10 @@ class TEST_SAMPLE_7124_MLAG(COMMONS_UTILS):
 
  def run(self):
   for input_data_dict in self.input_datas_list:
+   #################################################
+   # switch-name middle bar exchanger              #
+   #################################################
+   input_data_dict['mgmt_swname'] = re.sub(r"_",r"-",input_data_dict['mgmt_swname'])
    requested_swname = input_data_dict['mgmt_swname']
    requested_mgmt_ip_uptor = input_data_dict['mgmt_ip_uptor']
    requested_mgmt_ip_downtor = input_data_dict['mgmt_ip_downtor']
