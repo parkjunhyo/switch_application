@@ -3,8 +3,6 @@ terminal length 25
 !
 hostname CHANGE_HOSTNAME
 !
-snmp-server vrf Management
-!
 spanning-tree mode mstp
 no spanning-tree vlan 4094
 !
@@ -85,10 +83,9 @@ interface Vlan4094
    no autostate
    ip address MLAG_MY_IPADDR
 !
-ip route vrf Management 0.0.0.0/0 CHANGE_MGMT_GW_VIP
+ip route 10.0.0.0/8 CHANGE_MGMT_GW_VIP
 !
 ip routing
-ip routing vrf Management
 !
 mlag configuration
    domain-id MLAG-PEER
