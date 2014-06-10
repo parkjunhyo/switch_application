@@ -12,8 +12,14 @@ then
  mkdir /tftp_home
  chmod 777 /tftp_home
  # cp ./bootscript.py /tftp_home/bootscript.py
- ln ./bootscript.py /tftp_home/bootscript.py
- chmod 777 /tftp_home/bootscript.py
+
+ set `ls | grep -i 'bootscript.py'`
+ for bootscript_file in $@
+ do
+  chmod 777 ./$bootscript_file
+  ln ./$bootscript_file /tftp_home/$bootscript_file
+ done
+
 fi
 
 ## backup the original(init) file
