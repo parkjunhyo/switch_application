@@ -6,6 +6,7 @@ django_home="../django_home"
 django_source="https://www.djangoproject.com/m/releases/1.6/Django-1.6.2.tar.gz"
 django_rest_framework_gitsource="https://github.com/tomchristie/django-rest-framework.git"
 django_cors_headers_gitsource="https://github.com/ottoyiu/django-cors-headers.git"
+django_rest_framework_jwt_gitsource="https://github.com/GetBlimp/django-rest-framework-jwt.git"
 
 if [[ ! `which git` ]]
 then
@@ -35,6 +36,12 @@ django_git=`echo $django_cors_headers_gitsource | awk -F'[/]' 'END{print $NF}'`
 echo $django_git > $tmp_name
 sed -i 's/'.git'//' $tmp_name
 django_cors_headers=`cat $tmp_name`
+
+## django jwt 
+django_git=`echo $django_rest_framework_jwt_gitsource | awk -F'[/]' 'END{print $NF}'`
+echo $django_git > $tmp_name
+sed -i 's/'.git'//' $tmp_name
+django_jwt=`cat $tmp_name`
 
 if [[ ! -d $django_home ]]
 then
@@ -91,6 +98,20 @@ then
   exit
  fi
  cd $django_cors_headers
+ python setup.py install
+ cd $current_directory
+fi
+
+if [[ ! -d $django_home/$django_jwt ]]
+then
+ cd $django_home
+ git clone $django_rest_framework_jwt_gitsource
+ if [[ ! -d ./$django_jw ]]
+ then
+  echo "django jwt download was failed"
+  exit
+ fi
+ cd $django_jwt
  python setup.py install
  cd $current_directory
 fi
