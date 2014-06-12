@@ -34,9 +34,11 @@ ALLOWED_HOSTS = ['*']
 # http://www.django-rest-framework.org/tutorial/4-authentication-and-permissions
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
+##   this makes the pop login menu on web brower, and after login in
+##   permentarly, logined.
+##    'DEFAULT_PERMISSION_CLASSES': (
+##        'rest_framework.permissions.IsAuthenticated',
+##    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',

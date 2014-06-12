@@ -36,6 +36,7 @@ import MySQLdb
 # authentication                                                               #
 ################################################################################
 # @authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
+# @authentication_classes((SessionAuthentication, BasicAuthentication))
 # @permission_classes((IsAuthenticated,))
 ################################################################################
 def show_config_templates_list(request):
@@ -166,6 +167,7 @@ def get_builder_class_by_template_id(template_id):
 class show_config_templates_details(APIView):
 
  authentication_classes = (SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication)
+ # authentication_classes = (SessionAuthentication, BasicAuthentication)
  permission_classes = (IsAuthenticated,)
  #############################################################################################
  # default by http://www.django-rest-framework.org/tutorial/4-authentication-and-permissions #
@@ -250,6 +252,7 @@ def database_disconnect(open_db,open_cursor):
 # authentication                                                    #
 #####################################################################
 # @authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
+# @authentication_classes((SessionAuthentication, BasicAuthentication))
 # @permission_classes((IsAuthenticated,))
 #####################################################################
 def show_mgmtsw_list(request):
@@ -343,6 +346,7 @@ def get_builder_class_by_mgmt_swname(mgmt_swname):
 class show_mgmtsw_details(APIView):
 
  authentication_classes = (SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication)
+ # authentication_classes = (SessionAuthentication, BasicAuthentication)
  permission_classes = (IsAuthenticated,)
  #############################################################################################
  # default by http://www.django-rest-framework.org/tutorial/4-authentication-and-permissions #
