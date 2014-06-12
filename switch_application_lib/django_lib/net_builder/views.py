@@ -35,9 +35,9 @@ import MySQLdb
 ################################################################################
 # authentication                                                               #
 ################################################################################
-# @authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
+@authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
 # @authentication_classes((SessionAuthentication, BasicAuthentication))
-# @permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated,))
 ################################################################################
 def show_config_templates_list(request):
  if request.method == 'GET':
@@ -251,9 +251,9 @@ def database_disconnect(open_db,open_cursor):
 #####################################################################
 # authentication                                                    #
 #####################################################################
-# @authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
+@authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
 # @authentication_classes((SessionAuthentication, BasicAuthentication))
-# @permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated,))
 #####################################################################
 def show_mgmtsw_list(request):
 
