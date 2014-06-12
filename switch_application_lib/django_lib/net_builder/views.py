@@ -17,6 +17,7 @@ from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from rest_framework import permissions
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from net_builder.MyProgram.templates_list import templates_list as TEMPLATES_LIST
@@ -34,7 +35,7 @@ import MySQLdb
 ################################################################################
 # authentication                                                               #
 ################################################################################
-# @authentication_classes((SessionAuthentication, BasicAuthentication))
+# @authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
 # @permission_classes((IsAuthenticated,))
 ################################################################################
 def show_config_templates_list(request):
@@ -138,7 +139,7 @@ def get_builder_class_by_template_id(template_id):
 #   # curl -X POST http://192.168.42.135:8080/net_builder/config_templates/1/ -d '[{"name":"junhyo"}]' -H "Content-Type: application/json"  #
 #   # print request.POST : only form-data 
 #   # print request.DATA
-#   ##############################################################################################################
+#   #########################################################################################################################################
 #   input_datas_list = request.DATA
 #   if type(input_datas_list) == types.DictType:
 #    input_datas_list = [ input_datas_list ]
@@ -164,7 +165,7 @@ def get_builder_class_by_template_id(template_id):
 
 class show_config_templates_details(APIView):
 
- authentication_classes = (SessionAuthentication, BasicAuthentication)
+ authentication_classes = (SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication)
  permission_classes = (IsAuthenticated,)
  #############################################################################################
  # default by http://www.django-rest-framework.org/tutorial/4-authentication-and-permissions #
@@ -248,7 +249,7 @@ def database_disconnect(open_db,open_cursor):
 #####################################################################
 # authentication                                                    #
 #####################################################################
-# @authentication_classes((SessionAuthentication, BasicAuthentication))
+# @authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
 # @permission_classes((IsAuthenticated,))
 #####################################################################
 def show_mgmtsw_list(request):
@@ -341,7 +342,7 @@ def get_builder_class_by_mgmt_swname(mgmt_swname):
 
 class show_mgmtsw_details(APIView):
 
- authentication_classes = (SessionAuthentication, BasicAuthentication)
+ authentication_classes = (SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication)
  permission_classes = (IsAuthenticated,)
  #############################################################################################
  # default by http://www.django-rest-framework.org/tutorial/4-authentication-and-permissions #
