@@ -28,10 +28,19 @@ TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # Authentication definition
+# django JWT will be used for authentication, 
+# https://github.com/GetBlimp/django-rest-framework-jwt
+# http://www.django-rest-framework.org/api-guide/authentication
+# http://www.django-rest-framework.org/tutorial/4-authentication-and-permissions
+
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     )
 }
 
@@ -70,7 +79,7 @@ WSGI_APPLICATION = 'switch_application.wsgi.application'
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = False
-CORS_ORIGIN_WHITELIST = ('192.168.42.135')
+CORS_ORIGIN_WHITELIST = ('20.0.2.224')
 CORS_ORIGIN_REGEX_WHITELIST = ()
 CORS_ALLOW_HEADERS = (
         'x-requested-with',
